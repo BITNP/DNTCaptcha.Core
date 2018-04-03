@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using DNTCaptcha.Core.Contracts;
+using DNTCaptcha.Core.Internal;
 using DNTCaptcha.Core.Providers;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
@@ -161,21 +164,16 @@ namespace DNTCaptcha.Core
         {
             ViewContext.CheckArgumentNull(nameof(ViewContext));
 
-            IUrlHelper urlHelper = new UrlHelper(ViewContext);
-            var actionUrl = urlHelper.Action(action: nameof(DNTCaptchaImageController.Show),
-                controller: nameof(DNTCaptchaImageController).Replace("Controller", string.Empty),
-                values:
-                new
-                {
-                    text = encryptedText,
-                    rndDate = DateTime.Now.Ticks,
-                    foreColor = ForeColor,
-                    backColor = BackColor,
-                    fontSize = FontSize,
-                    fontName = FontName,
-                    area = ""
-                },
-                protocol: ViewContext.HttpContext.Request.Scheme);
+            var actionUrl = BuildImageUrl(new Dictionary<string, string>()
+            {
+                ["text"] = encryptedText,
+                ["rndDate"] = DateTime.Now.Ticks.ToString(),
+                ["foreColor"] = ForeColor,
+                ["backColor"] = BackColor,
+                ["fontSize"] = FontSize.ToString(),
+                ["fontName"] = FontName,
+                ["area"] = ""
+            });
 
             var captchaImage = new TagBuilder("img");
             var dntCaptchaImg = "dntCaptchaImg";
@@ -187,9 +185,28 @@ namespace DNTCaptcha.Core
             return captchaImage;
         }
 
+        private string BuildImageUrl(Dictionary<string, string> values)
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.Append(Constants.SHOW_IMAGE_NAME);
+            if (values.Count > 0)
+            {
+                builder.Append('?');
+                foreach (var pair in values)
+                {
+                    builder.Append(pair.Key);
+                    builder.Append('=');
+                    builder.Append(pair.Value.EscapeAll());
+                    builder.Append('&');
+                }
+                builder.Remove(builder.Length - 1, 1);
+            }
+            return builder.ToString();
+        }
+
         private TagBuilder getRefreshButtonTagBuilder(string captchaDivId, string captchaToken)
         {
-            IUrlHelper urlHelper = new UrlHelper(ViewContext);
+            IUrlHelper urlHelper = new Microsoft.AspNetCore.Mvc.Routing.UrlHelper(ViewContext);
             var actionUrl = urlHelper.Action(action: nameof(DNTCaptchaImageController.Refresh),
                 controller: nameof(DNTCaptchaImageController).Replace("Controller", string.Empty),
                 values:

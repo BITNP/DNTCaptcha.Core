@@ -1,5 +1,6 @@
 ﻿using DNTCaptcha.Core.Contracts;
 using DNTCaptcha.Core.Providers;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -24,6 +25,14 @@ namespace DNTCaptcha.Core
             services.TryAddSingleton<ICaptchaProtectionProvider, CaptchaProtectionProvider>();
             services.AddTransient<DNTCaptchaTagHelper>();
             services.AddTransient<IDNTCaptchaValidatorService, DNTCaptchaValidatorService>();
+        }
+
+        /// <summary>
+        /// Adds DNTCaptcha Middleware.
+        /// </summary>
+        public static void UseDNTCaptcha(this IApplicationBuilder app)
+        {
+            app.UseMiddleware<DNTCaptchaMiddleware>();
         }
     }
 }

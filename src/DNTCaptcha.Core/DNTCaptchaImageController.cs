@@ -118,35 +118,6 @@ namespace DNTCaptcha.Core
             return Content(content);
         }
 
-        /// <summary>
-        /// Creates the captcha image.
-        /// </summary>
-        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true, Duration = 0)]
-        public IActionResult Show(string text, string rndDate, string foreColor = "#1B0172",
-            string backColor = "", float fontSize = 12, string fontName = "Tahoma")
-        {
-            if (string.IsNullOrWhiteSpace(text))
-            {
-                return BadRequest();
-            }
-
-            var decryptedText = _captchaProtectionProvider.Decrypt(text);
-            if (decryptedText == null)
-            {
-                return BadRequest();
-            }
-
-            byte[] image;
-            try
-            {
-                image = _captchaImageProvider.DrawCaptcha(decryptedText, foreColor, backColor, fontSize, fontName);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogCritical(1001, ex, "DrawCaptcha error.");
-                return BadRequest(ex.Message);
-            }
-            return new FileContentResult(_captchaImageProvider.DrawCaptcha(decryptedText, foreColor, backColor, fontSize, fontName), "image/png");
-        }
+        
     }
 }

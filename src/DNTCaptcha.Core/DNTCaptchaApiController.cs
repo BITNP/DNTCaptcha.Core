@@ -65,21 +65,22 @@ namespace DNTCaptcha.Core
 
         private string getCaptchaImageUrl(DNTCaptchaTagHelperHtmlAttributes captchaAttributes, string encryptedText)
         {
-            var actionUrl = Url.Action(action: nameof(DNTCaptchaImageController.Show),
-               controller: nameof(DNTCaptchaImageController).Replace("Controller", string.Empty),
-               values:
-               new
-               {
-                   text = encryptedText,
-                   rndDate = DateTime.Now.Ticks,
-                   foreColor = captchaAttributes.ForeColor,
-                   backColor = captchaAttributes.BackColor,
-                   fontSize = captchaAttributes.FontSize,
-                   fontName = captchaAttributes.FontName,
-                   area = ""
-               },
-               protocol: HttpContext.Request.Scheme);
-            return actionUrl;
+            return "";
+            //var actionUrl = Url.Action(action: nameof(DNTCaptchaImageController.Show),
+            //   controller: nameof(DNTCaptchaImageController).Replace("Controller", string.Empty),
+            //   values:
+            //   new
+            //   {
+            //       text = encryptedText,
+            //       rndDate = DateTime.Now.Ticks,
+            //       foreColor = captchaAttributes.ForeColor,
+            //       backColor = captchaAttributes.BackColor,
+            //       fontSize = captchaAttributes.FontSize,
+            //       fontName = captchaAttributes.FontName,
+            //       area = ""
+            //   },
+            //   protocol: HttpContext.Request.Scheme);
+            //return actionUrl;
         }
     }
 }
